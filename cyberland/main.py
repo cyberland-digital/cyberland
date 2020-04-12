@@ -33,7 +33,8 @@ def tut():
 @app.route("/t", methods=["GET", "POST"])
 @app.route("/o", methods=["GET", "POST"])
 def board():
-    # 
+    # hn
+    pass
 
 if __name__ == '__main__':
     app.run()
