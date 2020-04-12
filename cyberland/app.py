@@ -1,11 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from .models import Board, Post
 
 # App config
 app = Flask(__name__)
-
 app.config.from_object('config')
-
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 # Automatically tear down SQLAlchemy
 '''
@@ -15,15 +15,7 @@ def shutdown_session(exception=None):
 '''
 
 '''
-class board(db.Model):
-    id = db.Column('board_id', db.Integer, primary_key=True)
-    name = db.Column(db.String(1))
 
-
-class posts(db.Model):
-    id = db.Column('post_id', db.Integer, primary_key=True)
-    content = db.Column('post_content', db.String(10000))
-    reply_to = db.Column('reply_to', db.ForeignKey(), nullable=True)
 '''
 
 
@@ -42,17 +34,17 @@ def tut():
 
 @app.route("/n")
 def board_n():
-    return ('<h1>Welcome to board /n/</h1>', 200)
+    return '<h1>Welcome to board /n/</h1>', 200
 
 
 @app.route('/o', methods=['GET', "POST"])
 def board_o():
-    return ('<h1>Welcome to board /o/</h1>', 200)
+    return '<h1>Welcome to board /o/</h1>', 200
 
 
 @app.route('/t')
 def board_t():
-    return ('<h1>Welcome to board /t/<h1>', 200)
+    return '<h1>Welcome to board /t/<h1>', 200
 
 
 # Error handlers
