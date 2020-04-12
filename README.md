@@ -21,4 +21,11 @@ Install python dependencies
 pip install -r requirements.txt
 ```
 
-To run the project
+To run the project first set environment variables
+```bash
+export FLASK_APP=flaskr
+```
+Then start the development server with
+```bash
+flask run
+```
