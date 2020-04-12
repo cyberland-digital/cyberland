@@ -10,6 +10,30 @@ def serve_text(file):
     response.mimetype = "text/plain"
     return response, 200
 
+
+def process_request(board, req):
+    if request.method == 'POST':
+        content = req.args.get('content')
+        replyto = req.args.get('replyTo')
+
+        db = get_db()
+        # validate the request and determine weather is reply or op
+        if replyto:
+            # check that post with that id exists for that board
+            pass
+        else:
+            post = db.execute('insert into post (board, content) values (?, ?)', (board, content))
+            db.commit()
+            return jsonify(post), 201
+
+
+def create_post(board, content):
+    pass
+
+
+def get_posts(board, num, thread):
+    pass
+
 # Controllers
 
 
@@ -25,27 +49,25 @@ def index():
 def tut():
     return serve_text("tut.txt")
 
+# board routes
+
 
 @bp.route("/n/")
 @bp.route("/n")
 def board_n():
-    return '''\nWelcome to board /n/. \n
-Please use Get and Post requests directly to interact with this board.\n\n''', 200
+    if request.method == 'POST':
+        board = 'n'
+        content = request
 
 
-@bp.route('/o/')
-@bp.route('/o')
+@bp.route('/o/', methods=['GET', 'POST'])
+@bp.route('/o', methods=['GET', 'POST'])
 def board_o():
     return '''\nWelcome to board /o/. \n
 Please use Get and Post requests directly to interact with this board.\n\n''', 200
 
 
-@bp.route('/t', methods=['GET'])
+@bp.route('/t/', methods=['GET', 'POST'])
+@bp.route('/t', methods=['GET', 'POST'])
 def board_t():
     return 'placeholder text'
-
-
-# Error handlers
-
-
-
