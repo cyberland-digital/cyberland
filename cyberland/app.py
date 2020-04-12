@@ -1,47 +1,44 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
-from .models import Board, Post
 
 # App config
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-# Automatically tear down SQLAlchemy
-'''
-@app.teardown_request
-def shutdown_session(exception=None):
-    db_session.remove()
-'''
-
-'''
-
-'''
-
 
 # Controllers
+
+def serve_text(file):
+    response = make_response(render_template(file))
+    print(file)
+    response.mimetype = "text/plain"
+    return response, 200
 
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return serve_text("index.txt")
 
 
 @app.route("/tut.txt")
 def tut():
-    return render_template("tut.html")
+    return serve_text("tut.txt")
 
 
+@app.route("/n/")
 @app.route("/n")
 def board_n():
     return '<h1>Welcome to board /n/</h1>', 200
 
 
-@app.route('/o', methods=['GET', "POST"])
+@app.route('/o/')
+@app.route('/o')
 def board_o():
     return '<h1>Welcome to board /o/</h1>', 200
 
 
+@app.route('/t/')
 @app.route('/t')
 def board_t():
     return '<h1>Welcome to board /t/<h1>', 200
