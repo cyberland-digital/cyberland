@@ -11,7 +11,6 @@ db = SQLAlchemy(app)
 
 def serve_text(file):
     response = make_response(render_template(file))
-    print(file)
     response.mimetype = "text/plain"
     return response, 200
 
