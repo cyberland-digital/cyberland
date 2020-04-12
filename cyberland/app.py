@@ -40,16 +40,19 @@ def tut():
     return render_template("tut.html")
 
 
+@app.route("/n/")
 @app.route("/n")
 def board_n():
     return ('<h1>Welcome to board /n/</h1>', 200)
 
 
-@app.route('/o', methods=['GET', "POST"])
+@app.route('/o/')
+@app.route('/o')
 def board_o():
     return ('<h1>Welcome to board /o/</h1>', 200)
 
 
+@app.route('/t/')
 @app.route('/t')
 def board_t():
     return ('<h1>Welcome to board /t/<h1>', 200)
