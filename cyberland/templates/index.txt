@@ -1,18 +1,17 @@
-  ____      _               _                 _            _       _     
- / ___|   _| |__   ___ _ __| | __ _ _ __   __| |       ___| |_   _| |__  
-| |  | | | | '_ \ / _ \ '__| |/ _` | '_ \ / _` |      / __| | | | | '_ \ 
-| |__| |_| | |_) |  __/ |  | | (_| | | | | (_| |  _  | (__| | |_| | |_) |
- \____\__, |_.__/ \___|_|  |_|\__,_|_| |_|\__,_| (_)  \___|_|\__,_|_.__/ 
-      |___/                                                              
-
-
+            _               _                 _      _ _       _ _        _ 
+  ___ _   _| |__   ___ _ __| | __ _ _ __   __| |  __| (_) __ _(_) |_ __ _| |
+ / __| | | | '_ \ / _ \ '__| |/ _` | '_ \ / _` | / _` | |/ _` | | __/ _` | |
+| (__| |_| | |_) |  __/ |  | | (_| | | | | (_| || (_| | | (_| | | || (_| | |
+ \___|\__, |_.__/ \___|_|  |_|\__,_|_| |_|\__,_(_)__,_|_|\__, |_|\__\__,_|_|
+      |___/                                              |___/            
+ 
 Welcome to cyberland!
 
 Cyberland is a textboard focused mainly on technology discussion and current affairs (although there is an off-topic board for you), it can be interacted with through http GET and POST requests to retrieve and post conversations to the 3 boards: 
- - /t/ technloogy
+ - /t/ technology
  - /n/ news
  - /o/ off-topic
-
+ - /c/ client tests
 Enjoy your stay!
 
 Questions
