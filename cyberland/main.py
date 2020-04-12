@@ -1,5 +1,7 @@
 from flask import Flask
 from flask import render_template
+from flask_sqlalchemy import SQLAlchemy
+from config import DevConfig
 
 app = Flask(__name__)
 
