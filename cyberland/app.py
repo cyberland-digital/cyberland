@@ -43,16 +43,18 @@ def index():
 def tut():
     return render_template("tut.html")
 
+@app.route("/n")
+def board_n():
+    return ('<h1>Welcome to board /n/</h1>', 200)
 
-@app.route("/o", methods=["GET", "POST"])
+@app.route('/o', methods=['GET', "POST"])
 def board_o():
-    return '<b>Welcome to board /t</b>', 200
+    return ('<h1>Welcome to board /o/</h1>', 200)
 
 
 @app.route('/t')
 def board_t():
-    return '<b>Welcome to board /t</b>', 200
-
+    return ('<h1>Welcome to board /t/<h1>', 200)
 # Error handlers
 
 
