@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+import json
 import os
 
 
@@ -45,19 +46,19 @@ def tut():
 
 @app.route("/o", methods=["GET", "POST"])
 def board_o():
-    return ('<b>Welcome to board /t', 200)
+    return '<b>Welcome to board /t</b>', 200
 
 
 @app.route('/t')
 def board_t():
-    return ('<b>Welcome to board /t', 200)
+    return '<b>Welcome to board /t</b>', 200
 
 # Error handlers
 
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return ('<b>Page not found</b>', 404)
+    return '<b>Page not found</b>', 404
 
 
 if __name__ == '__main__':
