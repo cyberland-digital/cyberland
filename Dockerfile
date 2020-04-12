@@ -1,9 +1,9 @@
 FROM python:3.6.9
 
-WORKDIR /cyberland
+WORKDIR /cyberland/
 
-APP ./cyberland
-
+ADD ./cyberland /
+RUN ls /cyberland
 RUN pip install -r requirements.txt
 
 EXPOSE 5000
