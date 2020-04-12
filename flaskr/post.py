@@ -1,9 +1,9 @@
-from flask import render_template, make_response, jsonify
-from cyberland.models import Post
-from cyberland.app import app
+from flask import Blueprint, flash, g, render_template, request, make_response, jsonify
 
+from flaskr.db import get_db
 
 # Helper functions
+
 
 def serve_text(file):
     response = make_response(render_template(file))
@@ -13,40 +13,39 @@ def serve_text(file):
 # Controllers
 
 
-@app.route('/')
+bp = Blueprint('post', __name__, url_prefix='/')
+
+
+@bp.route('/')
 def index():
     return serve_text("index.txt")
 
 
-@app.route("/tut.txt")
+@bp.route("/tut.txt")
 def tut():
     return serve_text("tut.txt")
 
 
-@app.route("/n/")
-@app.route("/n")
+@bp.route("/n/")
+@bp.route("/n")
 def board_n():
     return '''\nWelcome to board /n/. \n
 Please use Get and Post requests directly to interact with this board.\n\n''', 200
 
 
-@app.route('/o/')
-@app.route('/o')
+@bp.route('/o/')
+@bp.route('/o')
 def board_o():
     return '''\nWelcome to board /o/. \n
 Please use Get and Post requests directly to interact with this board.\n\n''', 200
 
 
-@app.route('/t/', methods=['GET'])
-@app.route('/t', methods=['GET'])
+@bp.route('/t', methods=['GET'])
 def board_t():
-    results = Post.query.filter_by(board='t')
-    return jsonify(results)
+    return 'placeholder text'
 
 
 # Error handlers
 
 
-@app.errorhandler(404)
-def not_found_error(error):
-    return 'Page not found\n', 404
+
