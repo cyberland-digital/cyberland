@@ -3,4 +3,4 @@ venv
 **.pyc
 instance/
 **.sqlite*
-*/__pycache__/
+__pycache__/
