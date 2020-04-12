@@ -1,5 +1,6 @@
-from flask import Flask, render_template, make_response
+from flask import Flask, render_template, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from .models import *
 
 # App config
 app = Flask(__name__)
@@ -37,10 +38,11 @@ def board_o():
     return '<h1>Welcome to board /o/</h1>', 200
 
 
-@app.route('/t/')
-@app.route('/t')
+@app.route('/t/', methods=['GET'])
+@app.route('/t', methods=['GET'])
 def board_t():
-    return '<h1>Welcome to board /t/<h1>', 200
+    results = Post.query.filter_by(board='t')
+    return jsonify(results)
 
 
 # Error handlers
