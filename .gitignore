@@ -2,3 +2,4 @@
 venv
 cyberland/venv
 cyberland/database.db
+cyberland/__pycache__/
