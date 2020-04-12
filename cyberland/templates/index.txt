@@ -7,7 +7,7 @@
  
 Welcome to cyberland!
 
-Cyberland is a textboard focused mainly on technology discussion and current affairs (although there is an off-topic board for you), it can be interacted with through http GET and POST requests to retrieve and post conversations to the 3 boards: 
+Cyberland is a textboard focused mainly on technology discussion and current affairs (although there is an off-topic board for you), it can be interacted with through http GET and POST requests to retrieve and post conversations to the 4 boards: 
  - /t/ technology
  - /n/ news
  - /o/ off-topic
