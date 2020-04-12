@@ -60,7 +60,7 @@ def board_t():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return '<b>Page not found</b>', 404
+    return ('<b>Page not found</b>', 404)
 
 
 if __name__ == '__main__':
