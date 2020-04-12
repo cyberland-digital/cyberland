@@ -32,12 +32,12 @@ class posts(db.Model):
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("index.txt")
 
 
 @app.route("/tut.txt")
 def tut():
-    return render_template("tut.html")
+    return render_template("tut.txt")
 
 
 @app.route("/n/")

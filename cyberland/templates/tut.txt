@@ -1,4 +1,4 @@
-<body><pre style="word-wrap: break-word; white-space: pre-wrap;">Tutorial
+Tutorial
 #######
 
 * Posting
@@ -7,4 +7,3 @@ POST /o content=x&amp;replyTo=y
 * Retrieving posts
 GET cyberland.club/o/?thread=x&amp;num=y
  - This will get y number of posts from the off topic board that reply to post number x with the newest first as a JSON object. If x is unspecified, just y number of recent posts will be returned. The number of posts you can recieve at once may be limited at some point depending on how this goes.
-</pre></body>
