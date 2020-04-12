@@ -3,3 +3,5 @@ venv
 cyberland/venv
 cyberland/database.db
 cyberland/__pycache__/
+**.pyc
+instance/

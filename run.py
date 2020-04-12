@@ -1,4 +1,4 @@
-from cyberland import app
+import cyberland.app as app
 
 DEBUG = True
 PORT = 5000
