@@ -15,6 +15,10 @@ def index():
 def tut():
     return render_template("tut.html")
 
+@app.route("/t", methods=["GET", "POST"])
+@app.route("/o", methods=["GET", "POST"])
+def board():
+    # 
 
 if __name__ == '__main__':
     app.run()
