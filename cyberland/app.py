@@ -1,4 +1,4 @@
-from flask import Flask, render_template, make_response
+from flask import Flask, render_template, make_response, request
 from flask_sqlalchemy import SQLAlchemy
 
 # App config
@@ -28,27 +28,30 @@ def tut():
 @app.route("/n/")
 @app.route("/n")
 def board_n():
-    return '<h1>Welcome to board /n/</h1>', 200
+    return '''\nWelcome to board /n/. \n
+Please use Get and Post requests directly to interact with this board.\n\n''', 200
 
 
 @app.route('/o/')
 @app.route('/o')
 def board_o():
-    return '<h1>Welcome to board /o/</h1>', 200
+    return '''\nWelcome to board /o/. \n
+Please use Get and Post requests directly to interact with this board.\n\n''', 200
 
 
 @app.route('/t/')
 @app.route('/t')
 def board_t():
-    return '<h1>Welcome to board /t/<h1>', 200
-
-
+    history = request.a
+    return '''\nWelcome to board /t/. \n
+Please use Get and Post requests directly to interact with this board.\n\n''', 200
 # Error handlers
+
 
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return '<b>Page not found</b>', 404
+    return 'Page not found\n', 404
 
 
 if __name__ == '__main__':
