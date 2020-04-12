@@ -1,8 +1,9 @@
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from .config import DevConfig
+import os
 
+
+# App config
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.sqlite'
@@ -20,6 +21,8 @@ class posts(db.Model):
     content = db.Column('post_content', db.String(10000))
     reply_to = db.Column('reply_to', db.ForeignKey(), nullable=True)
 
+# Controllers
+
 
 @app.route('/')
 def index():
@@ -30,11 +33,24 @@ def index():
 def tut():
     return render_template("tut.html")
 
-@app.route("/t", methods=["GET", "POST"])
+
 @app.route("/o", methods=["GET", "POST"])
-def board():
+def board_o():
     # hn
-    pass
+    return ('<b>Welcome to board /t', 200)
+
+
+@app.route('/t')
+def board_t():
+    return ('<b>Welcome to board /t', 200)
+
+# Error handlers
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return ('<b>Page not found</b>', 404)
+
 
 if __name__ == '__main__':
     app.run()
