@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response
 
 # App config
 app = Flask(__name__)
@@ -29,15 +29,19 @@ class posts(db.Model):
 
 # Controllers
 
+def serve_text(file):  
+    response = make_response(render_template(file))
+    print (file)
+    response.mimetype = "text/plain"
+    return response, 200
 
 @app.route('/')
 def index():
-    return render_template("index.txt")
-
+    return(serve_text("index.txt"))
 
 @app.route("/tut.txt")
 def tut():
-    return render_template("tut.txt")
+    return(serve_text("tut.txt"))
 
 
 @app.route("/n/")
