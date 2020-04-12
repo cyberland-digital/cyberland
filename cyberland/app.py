@@ -1,6 +1,6 @@
 from flask import Flask, render_template, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from .models import *
+from cyberland.models import *
 
 # App config
 app = Flask(__name__)
