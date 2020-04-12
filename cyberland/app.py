@@ -1,14 +1,9 @@
-from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-import json
-import os
-
+from flask import Flask, render_template
 
 # App config
 app = Flask(__name__)
 
 app.config.from_object('config')
-
 
 # db = SQLAlchemy(app)
 
@@ -31,6 +26,7 @@ class posts(db.Model):
     reply_to = db.Column('reply_to', db.ForeignKey(), nullable=True)
 '''
 
+
 # Controllers
 
 
@@ -43,9 +39,11 @@ def index():
 def tut():
     return render_template("tut.html")
 
+
 @app.route("/n")
 def board_n():
     return ('<h1>Welcome to board /n/</h1>', 200)
+
 
 @app.route('/o', methods=['GET', "POST"])
 def board_o():
@@ -55,6 +53,8 @@ def board_o():
 @app.route('/t')
 def board_t():
     return ('<h1>Welcome to board /t/<h1>', 200)
+
+
 # Error handlers
 
 
