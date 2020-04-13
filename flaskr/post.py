@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, make_response, jsonify
+from flask import Blueprint, render_template, request, make_response
 from flask_limiter import Limiter
+from json import dumps
 
 from flaskr.db import get_db
 
@@ -9,9 +10,11 @@ from flaskr.db import get_db
 
 def prepare_json(data):
     if type(data) == list:
-        json_string = jsonify([dict(row) for row in data])
+        json_string = dumps([dict(row) for row in data], default=str)
     else:
-        json_string = jsonify(dict(data))
+        json_string = dumps(dict(data), default=str)
+    json_string = make_response(json_string)
+    json_string.mimetype = "application/json"
     return json_string, 200
 
 
@@ -24,7 +27,6 @@ def serve_text(file):
 def process_request(board, req):
     db = get_db()
     if request.method == 'POST':
-
         content = req.form.get('content')
         reply = req.form.get('replyTo')
 
