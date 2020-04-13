@@ -12,19 +12,22 @@ def serve_text(file):
 
 
 def process_request(board, req):
+    db = get_db()
     if request.method == 'POST':
         content = req.args.get('content')
-        replyto = req.args.get('replyTo')
+        reply = req.args.get('replyTo')
 
-        db = get_db()
-        # validate the request and determine weather is reply or op
-        if replyto:
-            # check that post with that id exists for that board
-            pass
-        else:
-            post = db.execute('insert into post (board, content) values (?, ?)', (board, content))
-            db.commit()
-            return jsonify(post), 201
+        db.execute('insert into ? (content, replyto_id) values (?, ?)', (content, reply))
+        # If it is replying to a post (not an OP) then it must bump it
+        if reply:
+            db.execute('update ? set bumpCount = bumpCount + 1 where id = ?', (board, reply))
+        db.commit()
+
+        return 'object created', 201
+
+    elif request.method == 'GET':
+        num = req.args.get('content')
+        thread = req.args.get('thread')
 
 
 def create_post(board, content):
@@ -39,6 +42,8 @@ def get_posts(board, num, thread):
 
 bp = Blueprint('post', __name__, url_prefix='/')
 
+# definition routes / help files
+
 
 @bp.route('/')
 def index():
@@ -49,25 +54,22 @@ def index():
 def tut():
     return serve_text("tut.txt")
 
-# board routes
+# boards
 
 
-@bp.route("/n/")
-@bp.route("/n")
+@bp.route("/n/", methods=['GET', 'POST'])
+@bp.route("/n", methods=['GET', 'POST'])
 def board_n():
-    if request.method == 'POST':
-        board = 'n'
-        content = request
+    board = 'news'
 
 
 @bp.route('/o/', methods=['GET', 'POST'])
 @bp.route('/o', methods=['GET', 'POST'])
 def board_o():
-    return '''\nWelcome to board /o/. \n
-Please use Get and Post requests directly to interact with this board.\n\n''', 200
+    board = 'offtopic'
 
 
 @bp.route('/t/', methods=['GET', 'POST'])
 @bp.route('/t', methods=['GET', 'POST'])
 def board_t():
-    return 'placeholder text'
+    board = 'tech'
