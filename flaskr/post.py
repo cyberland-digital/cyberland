@@ -12,7 +12,7 @@ def prepare_json(data):
         json_string = jsonify([dict(row) for row in data])
     else:
         json_string = jsonify(dict(data))
-    return json_string
+    return json_string, 200
 
 
 def serve_text(file):
@@ -26,7 +26,6 @@ def process_request(board, req):
     if request.method == 'POST':
 
         content = req.form.get('content')
-        print(content)
         reply = req.form.get('replyTo')
 
         db.execute('insert into {} (content, replyTo) values (?, ?)'.format(board), (content, reply))
@@ -38,7 +37,7 @@ def process_request(board, req):
             db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
             db.commit()
 
-        data = db.execute('select * from {} order by created desc limit ?'.format(board), (50,)).fetchall()
+        data = db.execute('select * from {} order by time desc limit ?'.format(board), (50,)).fetchall()
         return prepare_json(data)
 
     elif request.method == 'GET':
@@ -49,17 +48,17 @@ def process_request(board, req):
         if not num:
             num = 50
         if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by created desc limit ?'.format(board),
-                              (thread, thread, num)).fetchall()
+            data = db.execute('select * from {} where replyTo=? or id=? order by time desc limit ?'.format(board),
+                                (thread, thread, num)).fetchall()
 
         else:
-            data = db.execute('select * from {} order by created desc limit ?'.format(board), (num,)).fetchall()
+            data = db.execute('select * from {} order by time desc limit ?'.format(board), (num,)).fetchall()
 
         return prepare_json(data)
 
 
-bp = Blueprint('post', __name__, url_prefix='/')
-
+#bp = Blueprint('post', __name__, url_prefix='/')
+bp = Blueprint('post', __name__)
 
 # help files
 

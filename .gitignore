@@ -4,3 +4,4 @@ venv
 instance/
 **.sqlite*
 __pycache__/
+.vscode/
