@@ -25,10 +25,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
     @app.errorhandler(404)
     def not_found_error(error):
-        return 'Page not found\n', 404
+        return 'Page not found', 404
 
     from . import db
     db.init_app(app)

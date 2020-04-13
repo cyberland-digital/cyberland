@@ -41,18 +41,19 @@ def process_request(board, req):
         return prepare_json(data)
 
     elif request.method == 'GET':
-
+        sort = req.args.get('sort')
         num = req.args.get('num')
         thread = req.args.get('thread')
-
+        if not sort:
+            sort = "time"
         if not num:
             num = 50
         if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by time desc limit ?'.format(board),
-                                (thread, thread, num)).fetchall()
+            data = db.execute('select * from {} where replyTo=? or id=? order by ? desc limit ?'.format(board),
+                                (thread, thread, sort, num)).fetchall()
 
         else:
-            data = db.execute('select * from {} order by time desc limit ?'.format(board), (num,)).fetchall()
+            data = db.execute('select * from {} order by ? desc limit ?'.format(board), (sort, num)).fetchall()
 
         return prepare_json(data)
 
