@@ -5,8 +5,8 @@ from flask import Flask
 
 
 def create_app(test_config=None):
-    # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -34,9 +34,9 @@ def create_app(test_config=None):
 
     from . import post
 
-    limiter = Limiter(app, key_func=get_remote_address, default_limits=["1/second"])
+    limiter = Limiter(app, key_func=get_remote_address)
     limiter.limit("5/minute", methods=['POST'])(post.bp)
-    limiter.limit("1/second")(post.bp)
+    limiter.limit("10/second", methods=['GET'])(post.bp)
 
     app.register_blueprint(post.bp)
 

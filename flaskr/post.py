@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, make_response
-from flask_limiter import Limiter
 from json import dumps
 
 from flaskr.db import get_db
