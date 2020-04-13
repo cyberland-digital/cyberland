@@ -1,11 +1,18 @@
 from flask import Blueprint, render_template, request, make_response, jsonify
-import json
-import sqlite3
+from flask_limiter import Limiter
 
 from flaskr.db import get_db
 
 
 # Helper functions
+
+
+def prepare_json(data):
+    if type(data) == list:
+        json_string = jsonify([dict(row) for row in data])
+    else:
+        json_string = jsonify(dict(data))
+    return json_string
 
 
 def serve_text(file):
@@ -15,38 +22,40 @@ def serve_text(file):
 
 
 def process_request(board, req):
+    db = get_db()
     if request.method == 'POST':
-        content = req.args.get('content')
-        reply = int(req.args.get('replyTo'))
 
-        cur = get_db().execute('insert into ? (content, replyTo) values (?, ?)', (content, reply))
+        content = req.form.get('content')
+        print(content)
+        reply = req.form.get('replyTo')
+
+        db.execute('insert into {} (content, replyTo) values (?, ?)'.format(board), (content, reply))
+        db.commit()
+
         # If it is replying to a post (not an OP) then it must bump it
         if reply:
-            cur = get_db().execute('update ? set bumpCount = bumpCount + 1 where id = ?', (reply))
-        get_db().commit()
+            reply = int(reply)
+            db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
+            db.commit()
 
-        return 'hi'
+        data = db.execute('select * from {} order by created desc limit ?'.format(board), (50,)).fetchall()
+        return prepare_json(data)
 
     elif request.method == 'GET':
-        db = get_db()
-        db.row_factory = sqlite3.Row
-
-        cur = db.cursor()
 
         num = req.args.get('num')
         thread = req.args.get('thread')
+
         if not num:
             num = 50
         if thread:
-
-            data = cur.execute('select * from {} where replyTo=? or id=? order by bumpCount desc limit ?'.format(board),
-                               (thread, thread, num)).fetchall()
+            data = db.execute('select * from {} where replyTo=? or id=? order by created desc limit ?'.format(board),
+                              (thread, thread, num)).fetchall()
 
         else:
-            data = cur.execute('select * from {} order by bumpCount desc limit ?'.format(board), (num,)).fetchall()
-            cur.close()
-        cur.close()
-        return jsonify([dict(row) for row in data])
+            data = db.execute('select * from {} order by created desc limit ?'.format(board), (num,)).fetchall()
+
+        return prepare_json(data)
 
 
 bp = Blueprint('post', __name__, url_prefix='/')
@@ -71,17 +80,22 @@ def tut():
 @bp.route("/n/", methods=['GET', 'POST'])
 @bp.route("/n", methods=['GET', 'POST'])
 def board_n():
-    board = 'news'
-    return process_request(board, request)
+    return process_request('news', request)
 
 
 @bp.route('/o/', methods=['GET', 'POST'])
 @bp.route('/o', methods=['GET', 'POST'])
 def board_o():
-    board = 'offtopic'
+    return process_request('offtopic', request)
 
 
 @bp.route('/t/', methods=['GET', 'POST'])
 @bp.route('/t', methods=['GET', 'POST'])
 def board_t():
-    board = 'tech'
+    return process_request('tech', request)
+
+
+@bp.route('/i/', methods=['GET', 'POST'])
+@bp.route('/i', methods=['GET', 'POST'])
+def board_i():
+    return process_request('images', request)
