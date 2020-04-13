@@ -58,7 +58,6 @@ def process_request(board, req):
         return prepare_json(data)
 
 
-#bp = Blueprint('post', __name__, url_prefix='/')
 bp = Blueprint('post', __name__)
 
 # help files

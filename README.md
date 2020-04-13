@@ -7,25 +7,27 @@ The source code for Cyberland.
 Various methods of setting up the Flask application. The current build of this project is `Python 3.6`. Please make sure you have this version of greater to create the virtualenv.
 
 
-### Virtualenv
-Create a virtual environment with python 3.6 in the root of the project.
+### Docker
+
+Build the docker image with
 ```bash
-virtualenv -p python3.6 venv
-```
-Then activate the environment using
-```bash
-source venv/bin/activate
-```
-Install python dependencies
-```bash
-pip install -r requirements.txt
+docker build -t cyberland:latest .
 ```
 
-To run the project first set environment variables
+Then create a directory (anywhere on your system) to hold the database in
 ```bash
-export FLASK_APP=flaskr
+mkdir instance
 ```
-Then start the development server with
+Create the docker container with
 ```bash
-flask run
+docker run -dit --name cyberland -p {PORT_ON_LOCAL_MACHIENE}:80 -v {PATH_TO_DATABASE FOLDER}:/usr/src/app/instance cyberland-dev
 ```
+For first run you will need to create the database
+```bash
+docker exec -it cyberland bash 
+```
+In this shell run
+```bash
+pipenv run flask init-db
+```
+If you set up the volumes correctly it should give you a success message. You can now exit the container shell with`exit`
