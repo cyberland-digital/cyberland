@@ -35,6 +35,14 @@ def process_request(board, req):
         if thread:
             posts = db.execute('select * from {} where replyTo=? or id=? order by bumpCount desc limit ?'.format(board),
                                (thread, thread, num)).fetchall()
+        content = req.form.get('content')
+        replyto = req.form.get('replyTo')
+
+        db = get_db()
+        # validate the request and determine weather is reply or op
+        if replyto:
+            # check that post with that id exists for that board
+            pass
         else:
             posts = db.execute('select * from {} order by bumpCount desc limit ?'.format(board), (num,)).fetchall()
         print(posts)
