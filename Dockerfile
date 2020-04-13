@@ -1,11 +1,16 @@
-FROM python:3.6.9
+FROM python:3.6
 
-WORKDIR /cyberland/
+MAINTAINER James Stone "jstone@jnet-it.com"
 
-ADD ./cyberland /
-RUN ls /cyberland
+WORKDIR /app
+
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-EXPOSE 5000
+COPY flaskr .
 
-CMD ["python", "main.py"]
+ENTRYPOINT ["flask"]
+ENV FLASK_APP flaskr
+
+CMD ["run"]
+
