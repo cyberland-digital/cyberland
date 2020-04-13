@@ -13,8 +13,8 @@ def serve_text(file):
 
 def process_request(board, req):
     if request.method == 'POST':
-        content = req.args.get('content')
-        replyto = req.args.get('replyTo')
+        content = req.form.get('content')
+        replyto = req.form.get('replyTo')
 
         db = get_db()
         # validate the request and determine weather is reply or op
@@ -52,12 +52,13 @@ def tut():
 # board routes
 
 
-@bp.route("/n/")
-@bp.route("/n")
+@bp.route("/n/", methods=['GET', 'POST'])
+@bp.route("/n", methods=['GET', 'POST'])
 def board_n():
     if request.method == 'POST':
         board = 'n'
         content = request
+        process_request(board,request)
 
 
 @bp.route('/o/', methods=['GET', 'POST'])
