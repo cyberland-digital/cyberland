@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, make_response, jsonify
+import json
+import sqlite3
 
 from flaskr.db import get_db
 
@@ -13,40 +15,38 @@ def serve_text(file):
 
 
 def process_request(board, req):
-    db = get_db()
     if request.method == 'POST':
         content = req.args.get('content')
         reply = int(req.args.get('replyTo'))
 
-        post = db.execute('insert into ? (content, replyTo) values (?, ?)', (content, reply))
+        cur = get_db().execute('insert into ? (content, replyTo) values (?, ?)', (content, reply))
         # If it is replying to a post (not an OP) then it must bump it
         if reply:
-            db.execute('update ? set bumpCount = bumpCount + 1 where id = ?', (reply))
-        db.commit()
+            cur = get_db().execute('update ? set bumpCount = bumpCount + 1 where id = ?', (reply))
+        get_db().commit()
 
-        return jsonify(post.fetchone()), 201
+        return 'hi'
 
     elif request.method == 'GET':
-        print('running this 1')
+        db = get_db()
+        db.row_factory = sqlite3.Row
+
+        cur = db.cursor()
+
         num = req.args.get('num')
         thread = req.args.get('thread')
         if not num:
             num = 50
         if thread:
-            posts = db.execute('select * from {} where replyTo=? or id=? order by bumpCount desc limit ?'.format(board),
-                               (thread, thread, num)).fetchall()
-        content = req.form.get('content')
-        replyto = req.form.get('replyTo')
 
-        db = get_db()
-        # validate the request and determine weather is reply or op
-        if replyto:
-            # check that post with that id exists for that board
-            pass
+            data = cur.execute('select * from {} where replyTo=? or id=? order by bumpCount desc limit ?'.format(board),
+                               (thread, thread, num)).fetchall()
+
         else:
-            posts = db.execute('select * from {} order by bumpCount desc limit ?'.format(board), (num,)).fetchall()
-        print(posts)
-        return jsonify(json_list=posts)
+            data = cur.execute('select * from {} order by bumpCount desc limit ?'.format(board), (num,)).fetchall()
+            cur.close()
+        cur.close()
+        return jsonify([dict(row) for row in data])
 
 
 bp = Blueprint('post', __name__, url_prefix='/')
