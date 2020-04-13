@@ -16,26 +16,29 @@ def process_request(board, req):
     db = get_db()
     if request.method == 'POST':
         content = req.args.get('content')
-        reply = req.args.get('replyTo')
+        reply = int(req.args.get('replyTo'))
 
-        db.execute('insert into ? (content, replyTo) values (?, ?)', (board, content, reply))
+        post = db.execute('insert into ? (content, replyTo) values (?, ?)', (content, reply))
         # If it is replying to a post (not an OP) then it must bump it
         if reply:
-            db.execute('update ? set bumpCount = bumpCount + 1 where id = ?', (board, reply))
+            db.execute('update ? set bumpCount = bumpCount + 1 where id = ?', (reply))
         db.commit()
 
-        return 'object created', 201
+        return jsonify(post.fetchone()), 201
 
     elif request.method == 'GET':
-        num = int(req.args.get('content'))
-        thread = str(req.args.get('thread'))
-
+        print('running this 1')
+        num = req.args.get('num')
+        thread = req.args.get('thread')
+        if not num:
+            num = 50
         if thread:
-            posts = db.execute('select * from ? where replyTo=? or id=? order by bumpCount desc limit ?',
-                               (board, thread, thread, num)).fetchall()
+            posts = db.execute('select * from {} where replyTo=? or id=? order by bumpCount desc limit ?'.format(board),
+                               (thread, thread, num)).fetchall()
         else:
-            posts = db.execute('select * from ? where replyTo')
-        return jsonify(posts)
+            posts = db.execute('select * from {} order by bumpCount desc limit ?'.format(board), (num,)).fetchall()
+        print(posts)
+        return jsonify(json_list=posts)
 
 
 bp = Blueprint('post', __name__, url_prefix='/')
@@ -61,7 +64,7 @@ def tut():
 @bp.route("/n", methods=['GET', 'POST'])
 def board_n():
     board = 'news'
-    process_request(board)
+    return process_request(board, request)
 
 
 @bp.route('/o/', methods=['GET', 'POST'])
