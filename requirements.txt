@@ -6,7 +6,6 @@ Jinja2==2.11.1
 limits==1.5.1
 Mako==1.1.2
 MarkupSafe==1.1.1
-pkg-resources==0.0.0
 python-dateutil==2.8.1
 python-editor==1.0.4
 redis==3.4.1
