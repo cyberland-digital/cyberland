@@ -4,8 +4,7 @@ create table news (
     created timestamp not null default current_timestamp,
     bumpCount int default null,
     content text not null,
-    replyto_id integer default null,
-    foreign key (replyto_id) references post (id)
+    replyTo integer default null,
 
     check (
         length("content") <= 10000
@@ -18,8 +17,7 @@ create table tech (
     created timestamp not null default current_timestamp,
     bumpCount int default null,
     content text not null,
-    replyto_id integer default null,
-    foreign key (replyto_id) references post (id)
+    replyTo integer default null,
 
     check (
         length("content") <= 10000
@@ -32,8 +30,7 @@ create table offtopic (
     created timestamp not null default current_timestamp,
     bumpCount int default null,
     content text not null,
-    replyto_id integer default null,
-    foreign key (replyto_id) references post (id)
+    replyTo integer default null,
 
     check (
         length("content") <= 10000
