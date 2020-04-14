@@ -20,7 +20,7 @@ mkdir instance
 ```
 Create the docker container with
 ```bash
-docker run -dit --name cyberland -p {PORT_ON_LOCAL_MACHIENE}:80 -v {PATH_TO_DATABASE FOLDER}:/usr/src/app/instance cyberland-dev
+docker run -dit --name cyberland -p {PORT_ON_LOCAL_MACHIENE}:80 -v {PATH_TO_DATABASE FOLDER}:/usr/src/app/instance cyberland
 ```
 For first run you will need to create the database
 ```bash
