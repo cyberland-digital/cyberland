@@ -23,18 +23,50 @@ def serve_text(file):
     return response, 200
 
 
+def reject_request(msg):
+    return msg, 400
+
+
+def post_exists(db, board, id):
+    try:
+        data = db.execute('select distinct id from {} where id = ?'.format(board), (id,))
+        return True
+
+    except:
+        return False
+
+
 def process_request(board, req):
     db = get_db()
     if request.method == 'POST':
+
+        BOARD_LIMITS = {
+            'tech': 10000,
+            'offtopic': 10000,
+            'news': 1000,
+            'images': 100000
+        }
+
         content = req.form.get('content')
         reply = req.form.get('replyTo')
+
+        if reply == 'null':
+            reply = None
+
+        if not content:
+            reject_request("Post must have content")
+
+        if len(content) > BOARD_LIMITS[board]:
+            reject_request(f"The character limit for this board is {BOARD_LIMITS[board]}")
 
         db.execute('insert into {} (content, replyTo) values (?, ?)'.format(board), (content, reply))
         db.commit()
 
-        # If it is replying to a post (not an OP) then it must bump it
+        if not post_exists(db, board, reply):
+            reject_request('The post you are replying to does not exist')
+
+        # If it is replying to a post (not an OP) then bump
         if reply:
-            reply = int(reply)
             db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
             db.commit()
 
@@ -42,13 +74,32 @@ def process_request(board, req):
         return prepare_json(data)
 
     elif request.method == 'GET':
+
+        SORTING_METHODS = ['time', 'bumpCount']
+
         sort = req.args.get('sort')
         num = req.args.get('num')
         thread = req.args.get('thread')
+
+        # Validate sort
         if not sort:
-            sort = "time"
+            sort = SORTING_METHODS[0]
+
+        if sort not in SORTING_METHODS:
+            reject_request("Invalid sorting method")
+
+        # validate num
         if not num:
             num = 50
+
+        if num > 1000:
+            reject_request("Fetch limit 1000")
+
+        # Validate thread
+        if not post_exists(db, board, thread):
+            reject_request('The thread you are replying to does not exist')
+
+        # execute query
         if thread:
             data = db.execute('select * from {} where replyTo=? or id=? order by ? desc limit ?'.format(board),
                                 (thread, thread, sort, num)).fetchall()
