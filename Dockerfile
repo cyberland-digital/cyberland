@@ -10,4 +10,4 @@ RUN python --version
 RUN pipenv install
 
 ENV FLASK_APP flaskr.__init__.py
-CMD ["pipenv", "run", "gunicorn", "-w", "4", "-b", ":80", "flaskr:create_app()"]
+CMD ["pipenv", "run", "gunicorn", "-w", "4", "-b", ":443","--certfile", "/certs/fullchain.pem", "--keyfile", "/certs/privkey.pem", "flaskr:create_app()"]
