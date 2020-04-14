@@ -30,6 +30,7 @@ Jinja2 = "==2.11.1"
 Mako = "==1.1.2"
 MarkupSafe = "==1.1.1"
 Werkzeug = "==1.0.1"
+flask-cors = "*"
 
 [requires]
 python_version = "3.6"
