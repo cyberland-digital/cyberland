@@ -4,4 +4,7 @@ venv
 instance/
 **.sqlite*
 __pycache__/
+dist/
+flaskr.egg-info/
+Pipfile.lock
 .vscode/
