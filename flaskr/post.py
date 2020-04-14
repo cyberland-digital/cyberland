@@ -87,6 +87,11 @@ def process_request(board, req):
             reject_request("Invalid sorting method")
 
         # validate num
+        try:
+            int(num)
+        except:
+            reject_request("Num should be an integer")
+
         if not num:
             num = 50
 
