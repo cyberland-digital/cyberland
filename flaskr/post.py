@@ -68,7 +68,7 @@ def process_request(board, req):
             db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
             db.commit()
 
-        data = db.execute('select * from {} order by time desc limit ?'.format(board), (50,)).fetchall()
+        data = db.execute('select * from {} order by id desc limit ?'.format(board), (50,)).fetchall()
         return prepare_json(data)
 
     elif request.method == 'GET':
@@ -107,11 +107,11 @@ def process_request(board, req):
             reject_request('Thread must be of type int')
 
         if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by ? desc limit ?'.format(board),
-                                (thread, thread, sort, num)).fetchall()
+            data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ?'.format(board),
+                                (thread, thread, num)).fetchall()
 
         else:
-            data = db.execute('select * from {} order by ? desc limit ?'.format(board), (sort, num)).fetchall()
+            data = db.execute('select * from {} order by id desc limit ?'.format(board), (num,)).fetchall()
 
         return prepare_json(data)
 
