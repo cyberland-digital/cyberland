@@ -78,6 +78,7 @@ def process_request(board, req):
         sort = req.args.get('sort')
         num = req.args.get('num')
         thread = req.args.get('thread')
+        offset = req.args.get('offset')
 
         # Validate sort
         if not sort:
@@ -85,6 +86,14 @@ def process_request(board, req):
 
         if sort not in SORTING_METHODS:
             reject_request("Invalid sorting method")
+		
+        # validate offset
+        try:
+            offset = int(offset)
+        except:
+            reject_request("Offset should be an integer")
+        if not offset:
+            offset = 0
 
         # validate num
         try:
@@ -107,11 +116,11 @@ def process_request(board, req):
             reject_request('Thread must be of type int')
 
         if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ?'.format(board),
-                                (thread, thread, num)).fetchall()
+            data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ? offset ?'.format(board),
+                                (thread, thread, num, offset)).fetchall()
 
         else:
-            data = db.execute('select * from {} order by id desc limit ?'.format(board), (num,)).fetchall()
+            data = db.execute('select * from {} order by id desc limit ? offset ?'.format(board), (num, offset)).fetchall()
 
         return prepare_json(data)
 
