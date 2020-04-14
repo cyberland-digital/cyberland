@@ -1,6 +1,8 @@
 # Cyberland Server
 
-New, rewritten Cyberland. We have done our best to emulate the way in which the old instances worked, however, some of these things are bad design and lack proper documentation. We are aware that MANY CLIENTS WILL BREAK which used to work on older versions. If you think there is something that can be done better
+New, rewritten Cyberland. We have done our best to emulate the way in which the old instances worked, however, some of these things are bad design and lack proper documentation. 
+
+We are aware that MANY CLIENTS WILL BREAK which used to work on older versions. If you think there is something that can be done better make an issue or RFC on GitHub.
 
 The source code for Cyberland.
 
