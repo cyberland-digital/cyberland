@@ -88,7 +88,7 @@ def process_request(board, req):
 
         # validate num
         try:
-            int(num)
+            num = int(num)
         except:
             reject_request("Num should be an integer")
 
