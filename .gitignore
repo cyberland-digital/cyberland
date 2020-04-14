@@ -3,7 +3,7 @@ venv
 **.pyc
 instance/
 **.sqlite*
-__pycache__/
+**/__pycache__/
 dist/
 flaskr.egg-info/
 Pipfile.lock
