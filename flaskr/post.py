@@ -28,12 +28,10 @@ def reject_request(msg):
 
 
 def post_exists(db, board, id):
-    try:
-        data = db.execute('select distinct id from {} where id = ?'.format(board), (id,))
+    data = db.execute('select distinct id from {} where id = ?'.format(board), (id,)).fetchone()
+    if data:
         return True
-
-    except:
-        return False
+    return False
 
 
 def process_request(board, req):
@@ -100,6 +98,9 @@ def process_request(board, req):
             reject_request('The thread you are replying to does not exist')
 
         # execute query
+        if (type(thread) is not int) and thread:
+            reject_request('Thread must be of type int')
+
         if thread:
             data = db.execute('select * from {} where replyTo=? or id=? order by ? desc limit ?'.format(board),
                                 (thread, thread, sort, num)).fetchall()

@@ -8,7 +8,7 @@ from flask_cors import CORS
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    CORS(app, resources={r"/*": {"origins": "https://cyberland.digital"}})
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     app.config.from_mapping(
         SECRET_KEY='dev',
