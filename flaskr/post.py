@@ -73,7 +73,7 @@ def process_request(board, req):
 
     elif request.method == 'GET':
 
-        SORTING_METHODS = ['time', 'bumpCount']
+        SORTING_METHODS = ['id', 'time', 'bumpCount']
 
         sort = req.args.get('sort')
         num = req.args.get('num')
