@@ -59,6 +59,6 @@ create table tests (
     replyTo integer default null,
 
     check (
-        length("content") <= 100000
+        length("content") <= 500
     )
 );
