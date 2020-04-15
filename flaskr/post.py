@@ -61,11 +61,14 @@ def process_request(board, req):
         db.execute('insert into {} (content, replyTo) values (?, ?)'.format(board), (content, reply))
         db.commit()
 
+        if not reply:
+            reply = 0
+
         if not post_exists(db, board, reply):
             reject_request('The post you are replying to does not exist')
 
         # If it is replying to a post (not an OP) then bump
-        if reply:
+        if reply != 0:
             db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
             db.commit()
 
@@ -117,14 +120,14 @@ def process_request(board, req):
         if (type(thread) is not int) and thread:
             reject_request('Thread must be of type int')
 
-        if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ? offset ?'.format(board),
-                                (thread, thread, num, offset)).fetchall()
-        elif ops_only:
-            data = db.execute('select * from {} where replyTo=0 or replyTo is null order by id desc limit ? offset ?'.format(board), (num, offset)).fetchall()
-        else:
-            data = db.execute('select * from {} order by id desc limit ? offset ?'.format(board), (num, offset)).fetchall()
+        if not thread:
+            thread = 0
 
+        if ops_only:
+            thread = 0
+
+        data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ? offset ?'.format(board),
+                          (thread, thread, num, offset)).fetchall()
         return prepare_json(data)
 
 
@@ -168,6 +171,7 @@ def board_t():
 @bp.route('/i', methods=['GET', 'POST'])
 def board_i():
     return process_request('images', request)
+
 
 @bp.route('/c/', methods=['GET', 'POST'])
 @bp.route('/c', methods=['GET', 'POST'])
