@@ -79,6 +79,7 @@ def process_request(board, req):
         num = req.args.get('num')
         thread = req.args.get('thread')
         offset = req.args.get('offset')
+        ops_only = req.args.get('opsOnly') == 'true'
 
         # Validate sort
         if not sort:
@@ -86,7 +87,7 @@ def process_request(board, req):
 
         if sort not in SORTING_METHODS:
             reject_request("Invalid sorting method")
-		
+
         # validate offset
         try:
             offset = int(offset)
@@ -118,7 +119,8 @@ def process_request(board, req):
         if thread:
             data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ? offset ?'.format(board),
                                 (thread, thread, num, offset)).fetchall()
-
+        elif ops_only:
+            data = db.execute('select * from {} where replyTo=0 or replyTo is null order by id desc limit ? offset ?'.format(board), (num, offset)).fetchall()
         else:
             data = db.execute('select * from {} order by id desc limit ? offset ?'.format(board), (num, offset)).fetchall()
 
