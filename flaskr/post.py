@@ -5,7 +5,9 @@ from flask_request_validator import (
     FORM,
     Param,
     Pattern,
-    validate_params
+    validate_params,
+    MaxLength,
+    MinLength
 )
 
 from flaskr.db import get_db
@@ -155,34 +157,16 @@ def tut():
 
 # boards
 
-
-@bp.route("/n/", methods=['GET', 'POST'])
-@bp.route("/n", methods=['GET', 'POST'])
-def board_n():
-    return process_request('news', request)
-
-
-@bp.route('/o/', methods=['GET', 'POST'])
-@bp.route('/o', methods=['GET', 'POST'])
-def board_o():
-    return process_request('offtopic', request)
+@bp.route("/<string:board>")
+@bp.route("/<string:board>/")
+@validate_params(
+    Param('board', PATH, str, required=True, rules=[MaxLength(1), MinLength(1)]),
+    Param('content', FORM, str, required=True, rules=[MinLength(1), MaxLength(100000)]),
+    Param('replyTo', FORM, int, required=False, default=0)
+)
+def create_post(board, content):
+    pass
 
 
-@bp.route('/t/', methods=['GET', 'POST'])
-@bp.route('/t', methods=['GET', 'POST'])
-def board_t():
-    return process_request('tech', request)
-
-
-@bp.route('/i/', methods=['GET', 'POST'])
-@bp.route('/i', methods=['GET', 'POST'])
-def board_i():
-    return process_request('images', request)
-
-
-@bp.route('/c/', methods=['GET', 'POST'])
-@bp.route('/c', methods=['GET', 'POST'])
-def board_c():
-    return process_request('tests', request)
-
-
+def get_posts(board):
+    pass
