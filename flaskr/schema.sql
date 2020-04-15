@@ -4,7 +4,7 @@ create table news (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default null,
+    replyTo integer default 0 not null,
 
     check (
         length("content") <= 10000
@@ -17,7 +17,7 @@ create table tech (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default null,
+    replyTo integer default 0 not null,
 
     check (
         length("content") <= 10000
@@ -30,7 +30,7 @@ create table offtopic (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default null,
+    replyTo integer default 0 not null,
 
     check (
         length("content") <= 10000
@@ -43,7 +43,7 @@ create table images (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default null,
+    replyTo integer default 0 not null,
 
     check (
         length("content") <= 100000
@@ -56,9 +56,9 @@ create table tests (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default null,
+    replyTo integer default 0 not null,
 
     check (
-        length("content") <= 100000
+        length("content") <= 500
     )
 );

@@ -61,24 +61,29 @@ def process_request(board, req):
         db.execute('insert into {} (content, replyTo) values (?, ?)'.format(board), (content, reply))
         db.commit()
 
+        if not reply:
+            reply = 0
+
         if not post_exists(db, board, reply):
             reject_request('The post you are replying to does not exist')
 
         # If it is replying to a post (not an OP) then bump
-        if reply:
+        if reply != 0:
             db.execute('update {} set bumpCount = bumpCount + 1 where id = ?'.format(board), (reply,))
             db.commit()
 
-        data = db.execute('select * from {} order by time desc limit ?'.format(board), (50,)).fetchall()
+        data = db.execute('select * from {} order by id desc limit ?'.format(board), (50,)).fetchall()
         return prepare_json(data)
 
     elif request.method == 'GET':
 
-        SORTING_METHODS = ['time', 'bumpCount']
+        SORTING_METHODS = ['id', 'time', 'bumpCount']
 
         sort = req.args.get('sort')
         num = req.args.get('num')
         thread = req.args.get('thread')
+        offset = req.args.get('offset')
+        ops_only = req.args.get('opsOnly') == 'true'
 
         # Validate sort
         if not sort:
@@ -86,6 +91,14 @@ def process_request(board, req):
 
         if sort not in SORTING_METHODS:
             reject_request("Invalid sorting method")
+
+        # validate offset
+        try:
+            offset = int(offset)
+        except:
+            reject_request("Offset should be an integer")
+        if not offset:
+            offset = 0
 
         # validate num
         try:
@@ -107,13 +120,14 @@ def process_request(board, req):
         if (type(thread) is not int) and thread:
             reject_request('Thread must be of type int')
 
-        if thread:
-            data = db.execute('select * from {} where replyTo=? or id=? order by ? desc limit ?'.format(board),
-                                (thread, thread, sort, num)).fetchall()
+        if not thread:
+            thread = 0
 
-        else:
-            data = db.execute('select * from {} order by ? desc limit ?'.format(board), (sort, num)).fetchall()
+        if ops_only:
+            thread = 0
 
+        data = db.execute('select * from {} where replyTo=? or id=? order by id desc limit ? offset ?'.format(board),
+                          (thread, thread, num, offset)).fetchall()
         return prepare_json(data)
 
 
@@ -157,6 +171,7 @@ def board_t():
 @bp.route('/i', methods=['GET', 'POST'])
 def board_i():
     return process_request('images', request)
+
 
 @bp.route('/c/', methods=['GET', 'POST'])
 @bp.route('/c', methods=['GET', 'POST'])
