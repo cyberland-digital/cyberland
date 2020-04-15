@@ -42,7 +42,8 @@ def process_request(board, req):
             'tech': 10000,
             'offtopic': 10000,
             'news': 1000,
-            'images': 100000
+            'images': 100000,
+            'tests': 500
         }
 
         content = req.form.get('content')
@@ -167,3 +168,10 @@ def board_t():
 @bp.route('/i', methods=['GET', 'POST'])
 def board_i():
     return process_request('images', request)
+
+@bp.route('/c/', methods=['GET', 'POST'])
+@bp.route('/c', methods=['GET', 'POST'])
+def board_c():
+    return process_request('tests', request)
+
+
