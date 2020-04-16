@@ -56,9 +56,9 @@ create table tests (
     time timestamp not null default current_timestamp,
     bumpCount int default 0,
     content text not null,
-    replyTo integer default 0 not null,
+    replyTo integer default null,
 
     check (
-        length("content") <= 500
+        length("content") <= 100000
     )
 );

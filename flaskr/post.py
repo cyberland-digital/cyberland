@@ -172,7 +172,7 @@ def board_t():
 def board_i():
     return process_request('images', request)
 
-
+ 
 @bp.route('/c/', methods=['GET', 'POST'])
 @bp.route('/c', methods=['GET', 'POST'])
 def board_c():
