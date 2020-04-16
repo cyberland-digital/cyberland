@@ -5,5 +5,5 @@ Tutorial
 POST /o content=x&replyTo=y
  - This will create a post to the off topic board containing the content x and replying to y, if y is unspecified, then it will be considered that it does not reply to anything.
 * Retrieving posts
-GET cyberland.digital/o/?thread=x&amp;num=y
- - This will get y number of posts from the off topic board that reply to post number x with the newest first as a JSON object. If x is unspecified, just y number of recent posts will be returned. The number of posts you can recieve at once may be limited at some point depending on how this goes.
+GET cyberland.digital/o/?thread=x&amp;num=y&amp;offset=z&amp;opsOnly=true
+ - This will get y number of posts from the off topic board that reply to post number x with the newest first as a JSON object. If x is unspecified, just y number of recent posts will be returned. The number of posts you can recieve at once may be limited at some point depending on how this goes. Setting an offset z will offset the posts - for example, with num=2 and offset=1, out of [1,2,3,4,5] you'll receive posts 3 and 4. Set opsOnly to true in order to only receive top-level posts.
