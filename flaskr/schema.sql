@@ -1,4 +1,4 @@
-drop table if exists site_boards;
+drop table if exists site_boards cascade;
 create table if not exists site_boards
 (
     id              serial primary key,

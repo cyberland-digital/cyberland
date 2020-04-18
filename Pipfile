@@ -32,6 +32,9 @@ MarkupSafe = "==1.1.1"
 Werkzeug = "==1.0.1"
 flask-cors = "==3.0.8"
 flask-request-validator = "*"
+psycopg2-binary = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.6"

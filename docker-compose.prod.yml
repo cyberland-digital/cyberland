@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  web:
+    build: ./Dockerfile.prod
+    ports:
+    - 5000:5000
+    env_file:
+      - ./.env.prod
+    volumes:
+    - /home/jimmy/certs:/certs
+    command: pipenv run gunicorn -w 4 -b :5000 --certfile /certs/fullchain.pem --keyfile /certs/privkey.pem flaskr:create_app()
+    depends_on:
+      - db
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgresdev
+      - POSTGRES_DB=cyberland
+
+volumes:
+  postgres_data:

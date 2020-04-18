@@ -1,47 +1,43 @@
-import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flaskr.utils import send_json
 from flask import Flask
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-BOARDS = ['t', 'o', 'n', 'c']
+VERSION_STRING = 'V1.0'
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+db = SQLAlchemy()
+limiter = Limiter()
+migrate = Migrate()
+
+
+def create_app():
+    app = Flask(__name__)
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-    )
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    app.config.from_object("../config.Config")
 
     @app.errorhandler(404)
     def not_found_error(error):
-        return 'Page not found', 404
+        return send_json({'error': "path not found"}, status=404)
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return send_json({'error': "server error"})
 
     from . import db
     db.init_app(app)
 
+    from . import limiter
+    limiter.init_app(app)
+
+    from . import migrate
+    migrate.init_app(app, db)
+
     from . import post
-
-    limiter = Limiter(app, key_func=get_remote_address)
-    limiter.limit("5/minute", methods=['POST'])(post.bp)
-    limiter.limit("10/second", methods=['GET'])(post.bp)
-
     app.register_blueprint(post.bp)
 
     return app
