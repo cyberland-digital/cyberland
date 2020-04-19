@@ -18,7 +18,7 @@ def create_app():
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-    app.config.from_object("../config.Config")
+    app.config.from_object("config.py")
 
     @app.errorhandler(404)
     def not_found_error(error):
@@ -28,16 +28,10 @@ def create_app():
     def server_error(error):
         return send_json({'error': "server error"})
 
-    from . import db
+    from flaskr import db, limiter, post
     db.init_app(app)
-
-    from . import limiter
     limiter.init_app(app)
-
-    from . import migrate
     migrate.init_app(app, db)
-
-    from . import post
     app.register_blueprint(post.bp)
 
     return app
