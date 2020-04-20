@@ -76,7 +76,7 @@ def create_post(board, content, replyTo):
 @bp.route("/<string:board>/", methods=['GET'])
 @validate_params(
     Param('board', PATH, str, rules=[MaxLength(1), MinLength(1)]),
-    Param('num', GET, str, required=False),
+    Param('num', GET, int, required=False, default=200),
     Param('offset', GET, int, required=False, default=0),
     Param('thread', GET, int, required=False, default=0)
 )
@@ -86,8 +86,10 @@ def get_posts(board, num, offset, thread):
         return send_json_error("Board not found in database", status=404)
 
     # Get posts from the database
+    if num > 200 or num <= 0:
+        return send_json_error("num must be greater than 0 and less than or equal to 200")
 
-    posts = PostsModel.query.limit(num).filter_by(board=board.id, replyTo=thread).all()
+    posts = PostsModel.query.filter_by(board=board.id, replyTo=thread).offset(offset).limit(num).all()
 
     results = [{
         "id": post.id,
