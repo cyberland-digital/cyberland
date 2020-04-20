@@ -25,7 +25,7 @@ class PostsModel(db.Model):
     __tablename__ = 'posts'
 
     id = db.Column(db.Integer, primary_key=True)
-    board_id = db.Column(db.Integer, db.ForeignKey("boards.board_id"), nullable=False)
+    board = db.Column(db.Integer, db.ForeignKey(BoardsModel.id), nullable=False)
 
     content = db.Column(db.Text, nullable=False)
 
@@ -35,8 +35,8 @@ class PostsModel(db.Model):
     archived = db.Column(db.Boolean, default=False)
     time = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
-    def __init__(self, board_id, content, replyTo):
-        self.board_id = board_id
+    def __init__(self, board, content, replyTo):
+        self.board = board
         self.content = content
         self.replyTo = replyTo
 

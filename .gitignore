@@ -7,4 +7,5 @@ instance/
 dist/
 flaskr.egg-info/
 Pipfile.lock
+migrations/
 .vscode/

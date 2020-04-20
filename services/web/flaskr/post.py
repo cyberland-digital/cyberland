@@ -32,8 +32,8 @@ def tut():
 
 @bp.route("/<string:board>/", methods=['POST'])
 @validate_params(
-    Param('board', PATH, str, required=True, rules=[MaxLength(1), MinLength(1)]),
-    Param('content', FORM, str, required=True, rules=[MinLength(1)]),
+    Param('board', PATH, str, rules=[MaxLength(1), MinLength(1)]),
+    Param('content', FORM, str, rules=[MinLength(1)]),
     Param('replyTo', FORM, int, required=False, default=0)
 )
 def create_post(board, content, replyTo):
@@ -41,17 +41,23 @@ def create_post(board, content, replyTo):
     if not board:
         return send_json_error("Board not found in database", status=404)
 
+    # check content length with board
+    if len(content) > board.character_limit:
+        return send_json_error("Post content too long for this board")
+
+    # TODO: sanitize messages
+
     # If post is replying to another post (not OP) check existence
     if replyTo != 0:
-        reply = PostsModel.query.filter_by(id=replyTo, board=board).first()
+        reply = PostsModel.query.filter_by(id=replyTo, board=board.id).first()
         if reply:
-            new_post = PostsModel(board, content, reply.id)
+            new_post = PostsModel(board=board.id, content=content, replyTo=reply.id)
             reply.bumps += 1
         else:
             return send_json_error("The post you are replying to does not exist", status=404)
 
     elif replyTo == 0:
-        new_post = PostsModel(board, content, replyTo)
+        new_post = PostsModel(board=board.id, content=content, replyTo=replyTo)
     else:
         return send_json_error("There was a problem with your request")
 
@@ -69,9 +75,10 @@ def create_post(board, content, replyTo):
 
 @bp.route("/<string:board>/", methods=['GET'])
 @validate_params(
-    Param('board', PATH, str, required=True, rules=[MaxLength(1), MinLength(1)]),
+    Param('board', PATH, str, rules=[MaxLength(1), MinLength(1)]),
     Param('num', GET, str, required=False),
-    Param('offset', GET, int, required=False, default=0)
+    Param('offset', GET, int, required=False, default=0),
+    Param('thread', GET, int, required=False, default=0)
 )
 def get_posts(board, num, offset, thread):
     board = BoardsModel.query.filter_by(slug=board).first()
@@ -79,4 +86,15 @@ def get_posts(board, num, offset, thread):
         return send_json_error("Board not found in database", status=404)
 
     # Get posts from the database
-    posts = PostsModel.query.filter_by(board=board).all()
+
+    posts = PostsModel.query.limit(num).filter_by(board=board.id, replyTo=thread).all()
+
+    results = [{
+        "id": post.id,
+        "content": post.content,
+        "replyTo": post.replyTo,
+        "bumpCount": post.bumps,
+        "time": post.time
+    } for post in posts]
+
+    return send_json(results)

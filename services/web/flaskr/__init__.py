@@ -1,6 +1,6 @@
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flaskr.utils import send_json
+from .utils import send_json
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -18,7 +18,7 @@ def create_app():
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-    app.config.from_object("config.py")
+    app.config.from_object("flaskr.config.Config")
 
     @app.errorhandler(404)
     def not_found_error(error):
@@ -28,7 +28,7 @@ def create_app():
     def server_error(error):
         return send_json({'error': "server error"})
 
-    from flaskr import db, limiter, post
+    from . import db, limiter, post
     db.init_app(app)
     limiter.init_app(app)
     migrate.init_app(app, db)

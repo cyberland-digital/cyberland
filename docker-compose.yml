@@ -2,9 +2,25 @@ version: '3.7'
 
 services:
   web:
-    build: .
-    command: pipenv flask run
+    build: ./services/web
+    command: pipenv run python manage.py run -h 0.0.0.0
+    volumes:
+    - ./services/web:/usr/src/app
     ports:
       - 5000:5000
     env_file:
       - ./.env.dev
+
+  db:
+    image: library/postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+    - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=cyberland
+      - POSTGRES_DB=cyberland
+
+volumes:
+  postgres_data:
