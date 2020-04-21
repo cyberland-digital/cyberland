@@ -17,7 +17,7 @@ venv
 
 # Python package compilation files
 **/dist
-flaskr.egg-info
+**.egg-info
 
 # Pipfile locking file
 Pipfile.lock
