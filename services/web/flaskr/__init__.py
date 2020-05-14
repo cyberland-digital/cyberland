@@ -1,6 +1,5 @@
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from .utils import send_json
+from .utils import send_json_error
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -20,18 +19,23 @@ def create_app():
 
     app.config.from_object("flaskr.config.Config")
 
-    @app.errorhandler(404)
-    def not_found_error(error):
-        return send_json({'error': "path not found"}, status=404)
+    # handle errors. always send json response
 
     @app.errorhandler(500)
     def server_error(error):
-        return send_json({'error': "server error"})
+        return send_json_error("server error", status=500)
 
-    from . import db, limiter, post
+    @app.errorhandler(429)
+    def slow_down(error):
+        return send_json_error("Too many requests, slow down", status=429)
+
+    # configure middleware
+    from . import db, limiter, migrate, post
     db.init_app(app)
     limiter.init_app(app)
     migrate.init_app(app, db)
+
+    # Register blueprints
     app.register_blueprint(post.bp)
 
     return app

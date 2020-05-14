@@ -21,7 +21,11 @@ def create_db():
 
     for board in boards:
         db.session.add(board)
-    db.session.commit()
+    try:
+        db.session.commit()
+        print("changes commited to database successfully")
+    except:
+        print("error commiting changes to database")
 
 
 if __name__ == '__main__':

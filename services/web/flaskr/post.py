@@ -1,65 +1,79 @@
-from flask import Blueprint
+from flask import Blueprint, request, abort
 from flaskr.models import BoardsModel, PostsModel
-from flaskr.utils import send_json, send_text_template, send_json_error
-from flaskr import db
-from flask_request_validator import (
-    PATH,
-    FORM,
-    GET,
-    Param,
-    Pattern,
-    validate_params,
-    MaxLength,
-    MinLength
-)
+from flaskr.utils import send_json, send_text_template, send_json_error, check_newlines
+from flaskr import db, limiter
 
 bp = Blueprint('post', __name__)
 
 
-@bp.route('/')
+# Tutorial and basic documentation routes
+
+
+@bp.route('/', methods=['GET'])
 def index():
     return send_text_template("index.txt")
 
 
-@bp.route("/tut.txt")
+@bp.route("/tut.txt", methods=['GET'])
 def tut():
     return send_text_template("tut.txt")
 
 
-# board logic
-# TODO: add redirects from /x to /x/
+# text board logic
 
 
 @bp.route("/<string:board>/", methods=['POST'])
-@validate_params(
-    Param('board', PATH, str, rules=[MaxLength(1), MinLength(1)]),
-    Param('content', FORM, str, rules=[MinLength(1)]),
-    Param('replyTo', FORM, int, required=False, default=0)
-)
-def create_post(board, content, replyTo):
+@limiter.limit('2 per minute')
+@limiter.limit("1 per 10 seconds")
+def create_post(board):
     board = BoardsModel.query.filter_by(slug=board).first()
     if not board:
-        return send_json_error("Board not found in database", status=404)
+        return abort(404)
 
-    # check content length with board
-    if len(content) > board.character_limit:
-        return send_json_error("Post content too long for this board")
+    content = request.form.get('content')
+    replyTo = request.form.get('replyTo')
+    # Validation
 
-    # TODO: sanitize messages
+    # condition: replyTo must be an integer if specified
+    if replyTo:
+        try:
+            replyTo = int(replyTo)
+        except ValueError:
+            return send_json_error("'replyTo' must be an integer")
 
+    # condition: must have content
+    if not content:
+        return send_json_error("'content' must be present")
+
+    # condition: post content must be a string
+    if type(content) is not str:
+        return send_json_error("'content' must be a string")
+
+    # condition: post content must have a length greater than 1
+    if len(content) < 1:
+        return send_json_error("'content' must be longer than 1 character")
+
+    # condition: check content length with board character limit
+    char_limit = board.character_limit
+    if len(content) > char_limit:
+        return send_json_error(f"'content' is too long for the requested board MAX LENGTH: {char_limit}")
+
+    # check the concentration of newlines in a message
+    if not check_newlines(content):
+        return send_json_error("'content' has too many newlines for the number of characters present")
+
+    # replyTo VALIDATION
     # If post is replying to another post (not OP) check existence
-    if replyTo != 0:
+    if replyTo:
         reply = PostsModel.query.filter_by(id=replyTo, board=board.id).first()
         if reply:
             new_post = PostsModel(board=board.id, content=content, replyTo=reply.id)
             reply.bumps += 1
         else:
-            return send_json_error("The post you are replying to does not exist", status=404)
+            return send_json_error("'replyTo' does not exist in database", status=404)
 
-    elif replyTo == 0:
-        new_post = PostsModel(board=board.id, content=content, replyTo=replyTo)
     else:
-        return send_json_error("There was a problem with your request")
+        new_post = PostsModel(board=board.id, content=content, replyTo=0)
 
     db.session.add(new_post)
     db.session.commit()
@@ -74,22 +88,49 @@ def create_post(board, content, replyTo):
 
 
 @bp.route("/<string:board>/", methods=['GET'])
-@validate_params(
-    Param('board', PATH, str, rules=[MaxLength(1), MinLength(1)]),
-    Param('num', GET, int, required=False, default=200),
-    Param('offset', GET, int, required=False, default=0),
-    Param('thread', GET, int, required=False, default=0)
-)
-def get_posts(board, num, offset, thread):
+@limiter.limit('30 per minute')
+@limiter.limit("1 per second")
+def get_posts(board):
     board = BoardsModel.query.filter_by(slug=board).first()
     if not board:
-        return send_json_error("Board not found in database", status=404)
+        return abort(404)
 
-    # Get posts from the database
-    if num > 200 or num <= 0:
-        return send_json_error("num must be greater than 0 and less than or equal to 200")
+    num = request.args.get('num')
+    offset = request.args.get('offset')
+    thread = request.args.get('thread')
 
-    posts = PostsModel.query.filter_by(board=board.id, replyTo=thread).offset(offset).limit(num).all()
+    # Validate parameters
+    if thread:
+        try:
+            thread = int(thread)
+        except ValueError:
+            return send_json_error("'thread' must be a integer")
+        if thread < 0:
+            return send_json_error("'thread' must not be negative")
+
+    if offset:
+        try:
+            offset = int(offset)
+        except ValueError:
+            return send_json_error("'offset' must be a integer")
+        if offset < 0:
+            return send_json_error("'offset' must not be negative")
+
+    if num:
+        try:
+            num = int(num)
+        except ValueError:
+            return send_json_error("'num' must be a integer")
+        if num < 0:
+            return send_json_error("'num' must not be negative")
+
+    # query database
+    if thread or thread == 0:
+        posts = PostsModel.query.filter_by(board=board.id, replyTo=thread).order_by(PostsModel.id.desc()).offset(
+            offset).limit(num).all()
+    else:
+        posts = PostsModel.query.filter_by(board=board.id).order_by(PostsModel.id.desc()).offset(offset).limit(
+            200).all()
 
     results = [{
         "id": post.id,

@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.prod
+    command: pipenv run gunicorn -b :5000 flaskr:create_app()
+    ports:
+    - 5000:5000
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
+    image: library/postgres:12-alpine
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+    env_file:
+     - ./.env.prod.db
+
+volumes:
+  postgres_data: {}
