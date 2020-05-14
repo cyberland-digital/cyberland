@@ -9,12 +9,12 @@ bp = Blueprint('post', __name__)
 # Tutorial and basic documentation routes
 
 
-@bp.route('/', methods=['GET'])
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     return send_text_template("index.txt")
 
 
-@bp.route("/tut.txt", methods=['GET'])
+@bp.route("/tut.txt", methods=['GET', 'POST'])
 def tut():
     return send_text_template("tut.txt")
 
